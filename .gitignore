@@ -1,4 +1,4 @@
-signers
-members
+network/signers/*/geth
+network/members/*/geth
 dapps
 */geth
