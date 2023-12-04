@@ -1,4 +1,6 @@
+docker/signers/*/geth
 network/signers/*/geth
 network/members/*/geth
+network/README.md
 dapps
 */geth
