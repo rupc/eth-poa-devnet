@@ -13,26 +13,34 @@ def assemble_extra_data(signer_count):
             return
 
         found_address = False
+    
         for filename in os.listdir(path):
             if filename.startswith("UTC--2023"):
                 file_path = os.path.join(path, filename)
                 if not os.path.exists(file_path):
                     print(f"Error: File {file_path} does not exist.")
                     continue
-                
+                address = ""
                 with open(file_path, 'r') as file:
                     keystore_data = json.load(file)
                     # keystore JSON 파일 내의 address 키에서 주소 가져오기
                     address = keystore_data['address']
                     signer_addresses.append(address)
                     found_address = True
-                    break
+                    # break
+                
+                secret_path = os.path.join(path, "address")
+                with open(secret_path, 'w') as file:
+                    file.write(address)
+                    
+                # Update genesis.json in each signer directory
+                single_extra = generate_extra_data(address)
+                update_genesis_extra_data(f"signers/signer{i}/genesis.json", address, single_extra)
 
         if not found_address:
             print(f"Error: No valid keystore file found in {path}.")
 
-    #  print(signer_addresses)
-
+    # Update genesis.json in a whole directory
     extra_data = generate_extra_data(signer_addresses)
     return signer_addresses, extra_data
 
@@ -45,18 +53,21 @@ def generate_extra_data(signers):
 
     return prefix + signers_data + suffix
 
+# common genesis.json
 def update_genesis_extra_data(genesis_path, signer_addresses, extra_data):
-    """
-    지정된 genesis.json 파일을 읽고, extraData 필드를 업데이트합니다.
-    """
     with open(genesis_path, 'r') as file:
         genesis_data = json.load(file)
 
     # extraData 필드 업데이트
     genesis_data['extradata'] = extra_data
 
-    for address in signer_addresses:
-        genesis_data["alloc"][address] = {"balance": "9999999999999999999"}
+    if isinstance(signer_addresses, str):
+        genesis_data["alloc"] = {}
+        genesis_data["alloc"][signer_addresses] = {"balance": "9999999999999999999"}
+    else:
+        genesis_data["alloc"] = {}
+        for address in signer_addresses:
+            genesis_data["alloc"][address] = {"balance": "9999999999999999999"}
 
     with open(genesis_path, 'w') as file:
         json.dump(genesis_data, file, indent=4)
@@ -74,5 +85,4 @@ signer_addresses, extra_data_field = assemble_extra_data(signer_count)
 if extra_data_field:
     print(extra_data_field)
 
-
-update_genesis_extra_data("genesis.json", signer_addresses, extra_data_field)
+update_genesis_extra_data("./genesis.json", signer_addresses, extra_data_field)

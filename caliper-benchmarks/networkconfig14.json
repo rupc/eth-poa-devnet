@@ -1,0 +1,27 @@
+{
+    "caliper": {
+        "blockchain": "ethereum",
+        "command": {
+            "start": "",
+            "end": ""
+        }
+    },
+    "ethereum": {
+        "url": "ws://0.0.0.0:8013",
+        "contractDeployerAddress": "d10a4423981615b7a325777ededa1b942470711e",
+        "contractDeployerAddressPassword": "",
+        "fromAddress": "d10a4423981615b7a325777ededa1b942470711e",
+        "fromAddressPassword": "",
+        "transactionConfirmationBlocks": 2,
+        "contracts": {
+            "simple": {
+                "path": "./src/ethereum/simple/simple.json",
+                "estimateGas": true,
+                "gas": {
+                    "query": 100000,
+                    "transfer": 70000
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: "3"
+
+networks:
+  dapoa:
+    external: true
+
+services:
+  node:
+    # build:
+    #     context: .
+    #     dockerfile: caliper-ethereum-clique.Dockerfile
+    image: caliper-ethereum-clique
+    container_name: ethereum_clique
+    volumes:
+      - ./keys:/root/.ethereum/keystore
+    ports:
+      - 8546:8546
+    command: --unlock 0xf0dfc2f12368d4f88dd5791f21cc4f29a685fc09 --password /root/.ethereum/keystore/password --mine --miner.threads 2 --miner.etherbase 0xf0dfc2f12368d4f88dd5791f21cc4f29a685fc09 --ws --ws.addr 0.0.0.0 --ws.port 40001 --ws.origins='*' --ws.api admin,eth,miner,personal,web3 --allow-insecure-unlock --nodiscover --miner.gasprice 1
+    networks:
+      - dapoa
